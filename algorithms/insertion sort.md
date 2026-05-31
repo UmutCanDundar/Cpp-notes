@@ -1,6 +1,8 @@
 # INSERTION SORT
 
-Always start with the second item and compare it to the previous one: if it is smaller, swap them and continue until array is sorted. 
+Always start with the second item and compare it to the previous one: 
+	
+	if it is smaller, swap them and continue until array is sorted. 
 
 Example:  Array {2,6,9,1,7,3}
 
