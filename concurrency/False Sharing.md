@@ -19,22 +19,6 @@
 
 ---
 
-## Extended Table — All Combinations
-
-| # | Thread 0 | Thread 1 | Same Cache Line? | Same Variable? | Data Race? | False Sharing? | Notes |
-|---|----------|----------|-----------------|----------------|------------|----------------|-------|
-| 1 | write | write | ✅ yes | ✅ yes | ✅ yes (non-atomic) | ✅ yes | Both data race and false sharing. Fix with atomic or mutex. |
-| 2 | write | read  | ✅ yes | ✅ yes | ✅ yes (non-atomic) | ✅ yes | Classic data race. Fix with atomic. |
-| 3 | read  | read  | ✅ yes | ✅ yes | ❌ no | ❌ no | Both only read — no issue. |
-| 4 | write | write | ✅ yes | ❌ no  | ❌ no | ✅ yes | Classic false sharing. No data race but cache line ping-pong. |
-| 5 | write | read  | ✅ yes | ❌ no  | ❌ no | ✅ yes | False sharing. T0's write invalidates T1's read. |
-| 6 | read  | read  | ✅ yes | ❌ no  | ❌ no | ❌ no | Both only read — cache line shared, no invalidation. |
-| 7 | write | write | ❌ no  | ❌ no  | ❌ no | ❌ no | Separate cache lines — no issue at all. |
-| 8 | write | read  | ❌ no  | ❌ no  | ❌ no | ❌ no | Separate cache lines — no issue at all. |
-| 9 | read  | read  | ❌ no  | ❌ no  | ❌ no | ❌ no | Ideal case. |
-
----
-
 ## Diagnosis — Which Problem Is It?
 
 | Symptom | Cause | Fix |
