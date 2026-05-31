@@ -2,7 +2,9 @@
 
 Combine two sorted arrays into one sorted array.
 
-Helper function ‘’Merge’’: Cuts array in half and create two new arrays
+Helper function ‘’Merge’’: 
+
+					Cuts array in half and create two new arrays
 
 			        Merge all sub-arrays until we have an original sorted array 
 					
