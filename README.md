@@ -13,16 +13,17 @@ Personal C++ notes, comparisons, and summaries built from studying core C++ conc
 | `cpp-fundamentals with short questions` | Language basics |
 | `memory-management` | Smart pointers |
 | `templates` | Template parameters, specialization, type traits, concepts |
-| `data-structures` | Array, list, stack, queue, tree, heap, hash, graph |
-| `algorithms` | Searching, sorting, transform, numeric, complexity analysis |
-| `stl` | STL headers: string, algorithm, numeric, containers, chrono, atomic, variant, C vs C++ |
-| `concurrency` | Threads, mutex, atomics, condition variables, async, false sharing |
-| `performance` | Cache locality, branch prediction, SIMD, optimization guide |
-| `low-latency` | What to avoid|
-| `design` | Creational, structural, behavioral patterns, dispatch methods, hot path design-pattern guide |
+| `data-structures` | Array, list, stack, queue, tree, heap, hash, graph - Big O comparison |
+| `algorithms` | Searching, sorting, stl algorithms - Big O comparison |
+| `stl` | Some stl headers |
+| `concurrency` | Threads, mutex, condition variables, false sharing |
+| `performance` | Optimization guide |
+| `low-latency` | What to avoid |
+| `design` | Creational, structural, behavioral patterns, dispatch methods |
 | `cppcon-notes` | CppCon talk summaries |
 | `hft` | HFT: C++ systems, math/quant, algo trading, general prep |
 | `assembly` |  x86-64 assembly instructions, registers |
+| `pre-code` | The features should be determined before coding |
 
 ---
 
