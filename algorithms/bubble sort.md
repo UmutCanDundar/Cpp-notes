@@ -1,8 +1,12 @@
 # BUBBLE SORT
 
-Always start with the first item and compare it to the next one: if it is greater, swap them and continue until array is sorted. 
+Always start with the first item and compare it to the next one: 
 
-Example:  Array {2,6,9,1,7,3}
+		 if it is greater, swap them and continue until array is sorted. 
+
+Example:  
+
+		 Array {2,6,9,1,7,3}
 
 	     When the process(inner loop) is complete for the first time: {2,6,1,7,3,9}
 		 
