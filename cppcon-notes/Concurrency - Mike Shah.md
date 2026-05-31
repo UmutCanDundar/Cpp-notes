@@ -1,6 +1,7 @@
 # (Notes from Modern C++ (cpp) Concurrency - Mike Shah - https://www.youtube.com/playlist?list=PLvv0ScY6vfd_ocTP2ZLicgqKnvq50OCXM)
 
 Parallelism: Everything happens at once, instantaneously, completely separate.
+
 Concurrency: Multiple things can happen at once, sometimes tasks have to wait on shared resources. 
 Create multiple threads (on the same core) and use std::mutex to prevent data race.
 
