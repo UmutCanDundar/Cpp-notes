@@ -2,15 +2,15 @@
 
 Look for the index that has min value: 
 
-Set minIndex to the first item(0) and compare it to other items, 
+    Set minIndex to the first item(0) and compare it to other items, 
 
-if an item is smaller than it, 
+    if an item is smaller than it, 
 
-set the index of the smaller one to minIndex,
+    set the index of the smaller one to minIndex,
 
-after checking all items, 
+    after checking all items, 
 
-swap the minimum value and the first item. 
+    swap the minimum value and the first item. 
 
 Repeat the process for all items. 
 
