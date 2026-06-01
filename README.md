@@ -2,7 +2,7 @@
 
 Personal C++ notes, comparisons, and summaries built from studying core C++ concepts, STL, data structures, algorithms, concurrency, performance, and HFT/low-latency systems.
 
-> Some notes are written as condensed insights and comparisons — not copy-paste from docs. Some notes and information about C++ libraries are made into tables by AI for clarity and added to this repo for easy reference. Others include personal notes from C++ content such as CppCon talks and courses.
+> Some notes are written as condensed insights and comparisons. Some notes and information about C++ libraries are made into tables by AI for clarity and added to this repo for easy reference. Others include personal notes from C++ content such as CppCon talks and courses.
 
 ---
 
