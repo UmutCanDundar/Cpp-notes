@@ -6,7 +6,6 @@
 | Cold path — init, config, error | readability | Runs rarely, latency doesn't matter. Write clearly, make it maintainable. |
 | Removing ifs and writing arrays | measure first | Hurts readability AND isn't always faster. Do it if the profiler shows it. |
 | Manual loop instead of STL algo | usually STL | STL is readable and usually equally fast. Manual code increases bug risk. Measure on hot path. |
-| Writing everything by hand | bad signal | In an interview, you'll get asked "why didn't you use STL?" Prefer it — override only if necessary. |
 | Short but complex one-liner | avoid | Clever code ≠ good code. Even you won't understand it in 3 months. Write a comment or separate lines. |
 
 ## Steps When Asked to "Optimize" 
