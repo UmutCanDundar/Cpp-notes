@@ -26,7 +26,7 @@ arr.front(), arr.back(), arr.size(), arr.at(index), arr{index], arr.data(),arr.e
 
 https://en.cppreference.com/w/cpp/container/array 
 
-##Dynamic Array (STL) std::vector:
+## Dynamic Array (STL) std::vector:
 
 Dynamic Size
 
