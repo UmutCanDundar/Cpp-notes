@@ -2,8 +2,9 @@
 
 Consists of nodes having value and pointing (left, right) nodes(children) - (binary tree)
 
-Can be Full (each node points to either 0 or 2 nodes),
-	
+Can be 
+
+	Full (each node points to either 0 or 2 nodes),
 	Perfect (all levels completely filled),
 	Complete (filled from left to right)
 
