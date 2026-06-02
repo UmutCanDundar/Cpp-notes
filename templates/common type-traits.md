@@ -19,3 +19,5 @@
 | `std::enable_if_t<B,T>` | type / none | T exists if B is true, otherwise ignored via SFINAE. |
 | `std::void_t<...>` (C++17) | void | Placeholder for checking multiple traits. Substitution fails if any expression is invalid. |
 | `std::invoke_result_t<F,Args...>` | type | Return type of F(Args...). |
+| `std::integral_constant<class T, T v>` | T | return v |
+| `std::bool_constant<bool B>` | bool | return B |
