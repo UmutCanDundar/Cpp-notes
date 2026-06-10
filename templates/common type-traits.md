@@ -20,4 +20,4 @@
 | `std::void_t<...>` (C++17) | void | Placeholder for checking multiple traits. Substitution fails if any expression is invalid. |
 | `std::invoke_result_t<F,Args...>` | type | Return type of F(Args...). |
 | `std::integral_constant<class T, T v>` | T | Holding compile time var which is: T v |
-| `std::bool_constant<bool B>` | bool | İnherited from integral constant and used for bool |
+| `std::bool_constant<bool B>` | bool | Inherited from integral constant and used for bool |
