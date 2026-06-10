@@ -3,8 +3,8 @@
 | API | Priority | Description |
 |-----|----------|-------------|
 | `std::sort(b, e)` | memorize | Unstable, O(n log n). Not on hot path. |
-| `std::lower_bound(b, e, val)` | memorize | O(log n) search in sorted array. For finding price levels in order book. |
-| `std::upper_bound(b, e, val)` | memorize | First element greater than val. |
+| `std::lower_bound(b, e, val)` | memorize | O(log n) search in sorted array. For finding the first element >= val. |
+| `std::upper_bound(b, e, val)` | memorize | For finding the first element > val. |
 | `std::binary_search(b, e, val)` | memorize | Returns bool. Not much different from `lower_bound != end` but more explicit. |
 | `std::find(b, e, val)` | know | Linear. Can be cache-friendly for small arrays. |
 | `std::find_if(b, e, pred)` | know | Linear search with condition. |
