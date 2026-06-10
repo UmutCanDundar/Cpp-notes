@@ -1,4 +1,4 @@
-# str* — Null-Terminated C String Functions `<cstring>` vs std::string — C++ String Functions `<string>`
+# str* — Null-Terminated C String Functions `<cstring>` vs std::string — C++ String Functions `<string>` + <charconv> and <format> 
 
 | C string | std::string equivalent | Signature | Perf & Notes |
 |----------|----------------------|-----------|-------|
