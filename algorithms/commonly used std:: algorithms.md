@@ -8,7 +8,7 @@
 | `std::binary_search(b, e, val)` | memorize | Returns bool. Not much different from `lower_bound != end` but more explicit. |
 | `std::find(b, e, val)` | know | Linear. Can be cache-friendly for small arrays. |
 | `std::find_if(b, e, pred)` | know | Linear search with condition. |
-| `std::any_of` / `all_of` / `none_of` | know | Returns bool, short-circuits. |
+| `std::any_of` / `all_of` / `none_of` | know | Returns bool, short-circuits Use with std::ranges. |
 | `std::fill(b, e, val)` | memorize | Fill array. Alternative to memset for non-trivial types. |
 | `std::copy(b, e, out)` | memorize | Copy. As fast as memcpy for trivial types. |
 | `std::move(b, e, out)` | know | Move with move semantics. |
