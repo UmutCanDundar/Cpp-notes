@@ -2,7 +2,7 @@
 
 We choose a side in an array to look for the target by checking whether the middle element is smaller or bigger than the target, then do it again until the target is found. 
 
-    Mid = low + (upper - lower) / 2
+    Mid = low + (high - low) / 2
 
 Time complexity - O(log n) 
 
