@@ -10,7 +10,7 @@
 | rdi | edi | di | dil | 1st argument, destination index |
 | rsp | esp | sp | spl | Stack pointer — do not use directly |
 | rbp | ebp | bp | bpl | Frame pointer, callee-saved |
-| r8–r11 | r8d–r11d | r8w–r11w | r8b–r11b | 5th–8th arguments, caller-saved |
+| r8–r11 | r8d–r11d | r8w–r11w | r8b–r11b | 5th–6th arguments, caller-saved |
 | r12–r15 | r12d–r15d | r12w–r15w | r12b–r15b | Callee-saved, general purpose |
 | rip | — | — | — | Instruction pointer — address of currently executing instruction |
 | rflags | eflags | — | — | ZF/CF/SF/OF flags — comparison results |
