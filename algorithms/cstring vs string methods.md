@@ -25,7 +25,7 @@
 | — | `.clear()` | `s.clear()` | ✅ Sets size to 0, keeps capacity. Good for reusing buffer without reallocating. |
 | — | `.c_str()` | `s.c_str()` | ⚠️ Returns null-terminated const char*. Valid until string is modified. Use only for C API interop. |
 | — | `.data()` | `s.data()` | ⚠️ Same as c_str() since C++11 for std::string. For std::string_view, not null-terminated — careful with C APIs. |
-| — | `std::string_view` | `std::string_view sv = s` | ✅✅ No allocation, no copy. Just a pointer+size. Use for read-only string params instead of const std::string&. Hot path friendly. |
+
 
 ---
 
