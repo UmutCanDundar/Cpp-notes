@@ -1,7 +1,5 @@
 # HFT Interview Notes: Core Statistics and Strategy Models
 
-> Prep notes for a low-latency C++ developer role. Goal: reach a baseline level solid enough to talk shop with quants.
-
 ---
 
 ## Table of Contents
