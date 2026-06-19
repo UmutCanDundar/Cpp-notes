@@ -232,4 +232,3 @@ The error of testing only on assets/companies that **still exist today** (the su
 
 ---
 
-*Next up: packet analysis (tcpdump/Wireshark/TCP stream) and FPGA/kernel bypass (DPDK/Solarflare/zero-copy) notes, in a separate file.*
