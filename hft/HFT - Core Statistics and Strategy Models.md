@@ -1,4 +1,4 @@
-# HFT Interview Notes: Core Statistics and Strategy Models
+# HFT: Core Statistics and Strategy Models
 
 ---
 
