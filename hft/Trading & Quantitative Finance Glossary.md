@@ -564,4 +564,3 @@ A comprehensive reference for trading, algorithmic trading, HFT, statistics, and
 
 ---
 
-*This glossary covers the core terminology used in trading, HFT, quantitative finance, and trading system development. Terms are grouped by domain but concepts are deeply interconnected — understanding one category deeply illuminates the others.*
