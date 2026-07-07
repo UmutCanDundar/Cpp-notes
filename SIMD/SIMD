@@ -1,9 +1,8 @@
-# SIMD Intrinsics Cheat Sheet (SSE / SSE2 / AVX / AVX2)
+# SIMD Intrinsics (SSE / SSE2 / AVX / AVX2)
 
 A categorized reference for x86 SIMD intrinsics: data types, load/store,
 arithmetic, comparison, set, and move/mask operations — plus a naming-suffix
-guide (`_ps`, `_pd`, `_epi32`, `_si128`, etc.) so you can decode *any*
-intrinsic name at a glance.
+guide (`_ps`, `_pd`, `_epi32`, `_si128`, etc.) 
 
 ## Required headers
 
