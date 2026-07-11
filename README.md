@@ -24,6 +24,7 @@ Personal C++ notes, comparisons, and summaries built from studying core C++ conc
 | `hft` | HFT: C++ systems, math/quant, algo trading, general prep |
 | `assembly` |  x86-64 assembly instructions, registers |
 | `pre-code` | The features should be determined before coding |
+| `advanced` | Some advanced C++ topics in detail |
 
 ---
 
