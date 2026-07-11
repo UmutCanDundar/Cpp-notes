@@ -15,3 +15,9 @@
 | `std::align(align, size, ptr, space)` | know | Align a pointer. Used when writing arena allocators. |
 | `::operator new(n, std::nothrow)` | know | Returns nullptr instead of throwing exception on allocation failure. |
 | placement new | memorize | `new(ptr) T(args)` — no allocation, constructs into existing memory. The foundation of object pools. |
+| `std::pmr::polymorphic_allocator<T>` | know | C++17. Runtime-polymorphic allocator, lets you swap allocation strategy without changing the container's type. |
+| `std::pmr::monotonic_buffer_resource` | memorize | Bump-pointer arena over a fixed buffer — near-zero allocation cost, ideal for per-tick/per-request scratch memory in hot loops. |
+| `std::pmr::unsynchronized_pool_resource` | know | Pooled allocator for fixed-size objects, avoids `malloc` overhead for frequent same-size allocations. |
+| `std::uninitialized_copy` / `uninitialized_fill` | know | Construct objects into raw, unconstructed memory — used when implementing custom containers. |
+| `std::construct_at` / `std::destroy_at` | know | C++20. Placement-new/destroy a single object at a given address, constexpr-friendly. |
+| `std::addressof(x)` | know | Gets the true address of x even if `operator&` is overloaded. Safer than `&x` in generic code. |
