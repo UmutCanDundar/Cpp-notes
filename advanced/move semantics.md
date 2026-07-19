@@ -93,6 +93,30 @@ std::unique_ptr<int> p1 = std::make_unique<int>(5);
 std::unique_ptr<int> p2 = std::move(p1); // p1 is now nullptr
 ```
 
+### Move Semantics: Parameter Passing Scenarios
+
+| # | Scenario | Accepts lvalue? | Accepts rvalue? | What happens on parameter passing | How it can be called | What happens inside the function | Is the original object left in a moved-from state? |
+|---|---|---|---|---|---|---|---|
+| 1 | `std::string name` (by value) + inside: `std::move(name)` | Yes | Yes | Lvalue → copy, Rvalue → move | Callable directly, or with `std::move()` | Move (into member) | **No** (parameter is already a separate object) |
+| 2 | `std::string name` (by value) + inside: `this->name = name` (assign) | Yes | Yes | Lvalue → copy, Rvalue → move | Callable directly, or with `std::move()` | Copy (extra, unnecessary) | **No** |
+| 3 | `std::string& name` (non-const ref) + inside: `std::move(name)` | Yes | **No** (compile error) | Neither (just binds/aliases) | Only callable directly (cannot pass rvalue / `std::move()`) | Move (moves out the original) | **Yes, silently** ⚠️ |
+| 4 | `std::string& name` (non-const ref) + inside: `this->name = name` (assign) | Yes | **No** (compile error) | Neither | Only callable directly | Copy | **No** |
+| 5 | `const std::string& name` + inside: `std::move(name)` | Yes | Yes | Neither (binds; temporary's lifetime extended if rvalue) | Callable directly, or with `std::move()` | **Actually a copy** (can't move from a const source, compiler falls back to copy assignment) | **No** (looks like a move but is really a copy — misleading code) |
+| 6 | `const std::string& name` + inside: `this->name = name` (assign) | Yes | Yes | Neither | Callable directly, or with `std::move()` | Copy (expected, explicit) | **No** |
+| 7 | `std::string&& name` (rvalue ref) + inside: `std::move(name)` | **No** (compile error) | Yes | Neither (binds) | Only callable with `std::move()` or an already-rvalue/temporary | Move | **Yes** (but the caller already signaled "I'm giving this up", so no surprise) |
+| 8 | `std::string&& name` (rvalue ref) + inside: `this->name = name` (assign) | **No** (compile error) | Yes | Neither | Only callable with `std::move()` or an already-rvalue/temporary | Copy (pointless — already had an rvalue but didn't move it) | **No** (but this design is pointless/wasteful — a code smell) |
+
+## Short commentary (per row)
+
+- **#1** — The standard, recommended "by value + move" idiom. Reasonably efficient for both lvalues and rvalues, original is always safe.
+- **#2** — Works, but wastes a copy that could have been a move; the `std::move` was forgotten.
+- **#3** — **Dangerous**: doesn't accept rvalues, but silently destroys the lvalue passed in. Should be avoided.
+- **#4** — Safe, but there's no reason to use non-const `&` here — `const&` would be the correct/idiomatic choice.
+- **#5** — **Misleading**: looks like a move (`std::move` is written), but because the reference is `const`, it actually falls back to a copy. Deceives the reader.
+- **#6** — Standard, safe, classic "always copy" approach — but misses the move optimization opportunity for rvalues.
+- **#7** — Zero-copy, most efficient, intent is explicit (caller is forced to write `std::move`). Usually paired with a `const&` overload.
+- **#8** — Pointless: you accepted an rvalue via `&&` but didn't move it, so you paid for a copy you didn't need to. Anti-pattern.
+
 ## Copy Elision
 
 Copy elision means the compiler skips creating a temporary copy entirely, constructing the object directly in its final location. This is faster than even a move.
