@@ -93,7 +93,7 @@ std::unique_ptr<int> p1 = std::make_unique<int>(5);
 std::unique_ptr<int> p2 = std::move(p1); // p1 is now nullptr
 ```
 
-### Move Semantics: Parameter Passing Scenarios
+## Move Semantics: Parameter Passing Scenarios
 
 | # | Scenario | Accepts lvalue? | Accepts rvalue? | What happens on parameter passing | How it can be called | What happens inside the function | Is the original object left in a moved-from state? |
 |---|---|---|---|---|---|---|---|
@@ -106,7 +106,7 @@ std::unique_ptr<int> p2 = std::move(p1); // p1 is now nullptr
 | 7 | `std::string&& name` (rvalue ref) + inside: `std::move(name)` | **No** (compile error) | Yes | Neither (binds) | Only callable with `std::move()` or an already-rvalue/temporary | Move | **Yes** (but the caller already signaled "I'm giving this up", so no surprise) |
 | 8 | `std::string&& name` (rvalue ref) + inside: `this->name = name` (assign) | **No** (compile error) | Yes | Neither | Only callable with `std::move()` or an already-rvalue/temporary | Copy (pointless — already had an rvalue but didn't move it) | **No** (but this design is pointless/wasteful — a code smell) |
 
-## Short commentary (per row)
+### Short commentary (per row)
 
 - **#1** — The standard, recommended "by value + move" idiom. Reasonably efficient for both lvalues and rvalues, original is always safe.
 - **#2** — Works, but wastes a copy that could have been a move; the `std::move` was forgotten.
