@@ -88,3 +88,24 @@ catch (const std::invalid_argument& e) { /* handle */ }
 catch (const std::out_of_range& e) { /* handle */ }
 catch (const std::exception& e) { /* fallback */ }
 ```
+
+## Errors hierarchy
+
+std::exception
+├── std::logic_error         
+│   ├── std::invalid_argument
+│   ├── std::domain_error
+│   ├── std::length_error
+│   └── std::out_of_range
+├── std::runtime_error        
+│   ├── std::range_error
+│   ├── std::overflow_error
+│   └── std::underflow_error
+├── std::bad_alloc           
+├── std::bad_cast            
+├── std::bad_typeid
+├── std::bad_optional_access  
+├── std::bad_variant_access
+└── std::bad_function_call
+
+
