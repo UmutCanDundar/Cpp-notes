@@ -89,7 +89,7 @@ catch (const std::out_of_range& e) { /* handle */ }
 catch (const std::exception& e) { /* fallback */ }
 ```
 
-## Errors hierarchy
+## Errors 
 
 ```
 std::exception
