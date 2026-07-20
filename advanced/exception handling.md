@@ -91,6 +91,7 @@ catch (const std::exception& e) { /* fallback */ }
 
 ## Errors hierarchy
 
+```
 std::exception
 ├── std::logic_error         
 │   ├── std::invalid_argument
@@ -107,5 +108,5 @@ std::exception
 ├── std::bad_optional_access  
 ├── std::bad_variant_access
 └── std::bad_function_call
-
+```
 
