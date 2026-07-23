@@ -1,0 +1,1073 @@
+# C++ Templates & Iterators — Comprehensive Reference
+
+> Every concept explained with a definition, syntax, and a working example.
+
+---
+
+## Table of Contents
+
+**Part I — Templates**
+1. [Template Type Parameters](#1-template-type-parameters)
+2. [Template Non-Type Parameters](#2-template-non-type-parameters)
+3. [Template Template Parameters](#3-template-template-parameters)
+4. [Template Arguments](#4-template-arguments)
+5. [Template Instantiation](#5-template-instantiation)
+6. [Function Templates](#6-function-templates)
+7. [Class Templates](#7-class-templates)
+8. [Class Template Argument Deduction (CTAD, C++17)](#8-class-template-argument-deduction-ctad-c17)
+9. [Member Templates](#9-member-templates)
+10. [Template Specialization](#10-template-specialization)
+11. [SFINAE](#11-sfinae)
+12. [Variadic Templates](#12-variadic-templates)
+13. [Perfect Forwarding](#13-perfect-forwarding)
+14. [Fold Expressions (C++17)](#14-fold-expressions-c17)
+15. [if constexpr](#15-if-constexpr)
+16. [Variable Templates](#16-variable-templates)
+17. [Alias Templates](#17-alias-templates)
+
+---
+
+# Templates
+
+## 1. Template Type Parameters
+
+A **type parameter** lets a template be generic over a *type*. It's declared with the `typename` or `class` keyword (they're interchangeable here — `class` doesn't mean the argument must be a class).
+
+```cpp
+template <typename T>
+T maxOf(T a, T b) {
+    return (a > b) ? a : b;
+}
+
+int main() {
+    maxOf(3, 7);        // T deduced as int
+    maxOf(3.5, 2.1);     // T deduced as double
+    maxOf<double>(3, 4.5); // T explicitly forced to double
+}
+```
+
+Multiple type parameters:
+
+```cpp
+template <typename T, typename U>
+auto add(T a, U b) -> decltype(a + b) {
+    return a + b;
+}
+
+add(3, 4.5);   // T=int, U=double, returns double
+```
+
+---
+
+## 2. Template Non-Type Parameters
+
+A **non-type parameter (NTTP)** is a *value* known at compile time, not a type — e.g. an integer, an enum, a pointer/reference to something with static storage duration, or (since C++20) certain class types (literal types, including some floating-point types via `auto` NTTPs).
+
+```cpp
+template <typename T, std::size_t N>
+class FixedArray {
+    T data[N]; // N must be a compile-time constant
+public:
+    constexpr std::size_t size() const { return N; }
+    T& operator[](std::size_t i) { return data[i]; }
+};
+
+int main() {
+    FixedArray<int, 5> arr;   // N = 5, fixed at compile time
+    arr[0] = 10;
+    static_assert(FixedArray<int,5>{}.size() == 5);
+}
+```
+
+Non-type parameters can also have default values and can be used for compile-time computation:
+
+```cpp
+template <int N>
+struct Factorial {
+    static constexpr int value = N * Factorial<N - 1>::value;
+};
+
+template <>
+struct Factorial<0> {
+    static constexpr int value = 1;
+};
+
+static_assert(Factorial<5>::value == 120);
+```
+
+C++20 allows `auto` as a non-type template parameter, deducing the NTTP's type:
+
+```cpp
+template <auto N>
+struct Wrapper {
+    static constexpr auto value = N;
+};
+
+Wrapper<10> w1;      // N deduced as int
+Wrapper<'A'> w2;     // N deduced as char
+```
+
+---
+
+## 3. Template Template Parameters
+
+A **template template parameter** is a parameter that is itself a *class template*, not a concrete type. It's used when you want to parameterize which container template (e.g. `vector` vs `list`) to use internally, while still letting the caller pick the contained type separately.
+
+```cpp
+template <typename T, template <typename, typename> class Container>
+class Stack {
+    Container<T, std::allocator<T>> data;
+public:
+    void push(const T& value) { data.push_back(value); }
+    void pop() { data.pop_back(); }
+    T& top() { return data.back(); }
+    bool empty() const { return data.empty(); }
+};
+
+int main() {
+    Stack<int, std::vector> s1;   // uses std::vector<int> internally
+    Stack<int, std::deque>  s2;   // uses std::deque<int> internally
+    s1.push(10);
+    s2.push(20);
+}
+```
+
+**Note:** the template parameter list of the template-template parameter (here `template <typename, typename> class Container`) must match the signature of the template being passed (`std::vector` actually takes `<T, Allocator>`, so we declare it that way). Since C++17, this matching is more lenient (default arguments in the passed template are considered).
+
+---
+
+## 4. Template Arguments
+
+**Template arguments** are the concrete values (types, constants, or templates) supplied for a template's parameters when it is used/instantiated.
+
+### Explicit Template Arguments
+
+You explicitly write out the argument(s) in angle brackets instead of relying on deduction.
+
+```cpp
+template <typename T>
+T identity(T x) { return x; }
+
+int main() {
+    identity<double>(5);   // explicit: T = double, 5 is converted to 5.0
+    identity(5);            // deduced: T = int
+}
+```
+
+Explicit arguments are **required** when the compiler cannot deduce them, e.g. when the type parameter doesn't appear in the function parameter list:
+
+```cpp
+template <typename T>
+T getDefault() { return T{}; }
+
+int main() {
+    int x = getDefault<int>();      // must specify T explicitly
+    std::string s = getDefault<std::string>();
+}
+```
+
+### Default Template Arguments
+
+A template parameter can have a default, used when the caller doesn't supply one.
+
+```cpp
+template <typename T = int, int N = 10>
+class Buffer {
+    T data[N];
+public:
+    constexpr int size() const { return N; }
+};
+
+int main() {
+    Buffer<> b1;          // T = int, N = 10  (both defaults)
+    Buffer<double> b2;    // T = double, N = 10
+    Buffer<double, 20> b3; // T = double, N = 20
+}
+```
+
+Default template arguments also work for function templates (C++11+):
+
+```cpp
+template <typename T, typename Compare = std::less<T>>
+bool isSorted(const std::vector<T>& v, Compare comp = Compare{}) {
+    return std::is_sorted(v.begin(), v.end(), comp);
+}
+```
+
+---
+
+## 5. Template Instantiation
+
+**Instantiation** is the process where the compiler generates actual code (a concrete function/class) from a template, substituting the template parameters with real arguments. This happens only when the template is actually *used* — this is the "as-if used" or **implicit instantiation** rule.
+
+```cpp
+template <typename T>
+T square(T x) { return x * x; }
+
+int main() {
+    square(5);      // implicit instantiation: compiler generates square<int>
+    square(2.5);    // implicit instantiation: compiler generates square<double>
+    // A template that's never called generates NO code at all.
+}
+```
+
+### Explicit Instantiation
+
+You can force the compiler to instantiate a template even without a call site — useful for reducing compile times across translation units or for pre-compiling template code into a library.
+
+```cpp
+template <typename T>
+T square(T x) { return x * x; }
+
+// Explicit instantiation definition — forces code generation here:
+template int square<int>(int);
+template double square<double>(double);
+```
+
+### Explicit Instantiation Declaration (`extern template`, C++11)
+
+Tells the compiler *not* to instantiate the template in this translation unit (it's assumed to be instantiated elsewhere), avoiding duplicate work across multiple `.cpp` files.
+
+```cpp
+// header.h
+extern template class std::vector<int>;   // declaration only, don't instantiate here
+
+// one .cpp file
+template class std::vector<int>;          // actual instantiation happens here
+```
+
+### Two-Phase Lookup / Compilation Model
+
+Templates are compiled in **two phases**:
+1. At definition time — syntax and non-dependent names are checked.
+2. At instantiation time — dependent names (those depending on template parameters) are resolved and type-checked with the actual arguments.
+
+This is why template definitions typically live in headers: the compiler needs the full definition available at every point of instantiation (unless explicit instantiation is used).
+
+---
+
+## 6. Function Templates
+
+A **function template** defines a family of functions parameterized by type(s) and/or value(s).
+
+```cpp
+template <typename T>
+void swapValues(T& a, T& b) {
+    T temp = a;
+    a = b;
+    b = temp;
+}
+
+int main() {
+    int x = 1, y = 2;
+    swapValues(x, y);   // instantiates swapValues<int>
+
+    std::string s1 = "hi", s2 = "bye";
+    swapValues(s1, s2);  // instantiates swapValues<std::string>
+}
+```
+
+### Function Template Argument Deduction
+
+The compiler infers template arguments from the types of the function call arguments — you usually don't need to write `<T>` explicitly.
+
+```cpp
+template <typename T>
+void print(T value) { std::cout << value << "\n"; }
+
+print(42);        // T deduced as int
+print(3.14);       // T deduced as double
+print("hello");    // T deduced as const char*
+```
+
+**Deduction rules with references:**
+
+```cpp
+template <typename T>
+void f(T param);          // param is a copy — T deduced by decaying (removes const/ref)
+
+template <typename T>
+void g(T& param);         // param is a reference — const-ness is preserved in T
+
+template <typename T>
+void h(T&& param);        // "universal/forwarding reference" — T deduced differently
+                            // for lvalues (T = U&) vs rvalues (T = U)
+
+int main() {
+    const int ci = 10;
+    f(ci);   // T = int         (const stripped, param is a copy)
+    g(ci);   // T = const int   (reference preserves const)
+
+    int x = 5;
+    h(x);        // lvalue passed  -> T = int&,  param type = int&
+    h(10);       // rvalue passed  -> T = int,   param type = int&&
+}
+```
+
+Deduction can also fail when there's ambiguity — e.g. mismatched types for the same parameter used twice:
+
+```cpp
+template <typename T>
+T addSame(T a, T b) { return a + b; }
+
+addSame(3, 4);       // OK, T = int
+// addSame(3, 4.5);  // ERROR: T deduced as int from first arg, double from second — conflict
+addSame<double>(3, 4.5); // OK — explicit argument resolves ambiguity
+```
+
+### Function Template Overloading
+
+Multiple function templates (or a template alongside a plain, non-template function) can share the same name; overload resolution picks the best match, with **non-template functions preferred over templates when both match equally well**.
+
+```cpp
+template <typename T>
+void process(T value) {
+    std::cout << "Generic template: " << value << "\n";
+}
+
+template <typename T>
+void process(T* ptr) {
+    std::cout << "Pointer specialization: " << *ptr << "\n";
+}
+
+void process(int value) {   // plain (non-template) overload
+    std::cout << "Non-template int overload: " << value << "\n";
+}
+
+int main() {
+    int x = 5;
+    process(x);     // calls the non-template overload (preferred over template)
+    process(&x);     // calls process<T*> — pointer overload is more specialized
+    process(3.14);   // calls process<T> generic template
+}
+```
+
+**Overload resolution order (simplified):**
+1. Exact match (non-template preferred over template if otherwise tied)
+2. Best template match (more specialized template preferred, e.g. `T*` over `T`)
+3. Match requiring implicit conversions
+
+---
+
+## 7. Class Templates
+
+A **class template** defines a family of classes parameterized by type(s) and/or value(s).
+
+```cpp
+template <typename T>
+class Box {
+    T value;
+public:
+    Box(T v) : value(v) {}
+    T get() const { return value; }
+    void set(T v) { value = v; }
+};
+
+int main() {
+    Box<int> intBox(42);
+    Box<std::string> strBox("hello");
+
+    std::cout << intBox.get() << "\n";   // 42
+    std::cout << strBox.get() << "\n";   // hello
+}
+```
+
+Class templates can have multiple parameters, default arguments, and non-type parameters, just like function templates:
+
+```cpp
+template <typename Key, typename Value, typename Hash = std::hash<Key>>
+class SimpleMap {
+    // ...
+};
+
+template <typename T, std::size_t Capacity>
+class StaticStack {
+    T data[Capacity];
+    std::size_t count = 0;
+public:
+    void push(const T& v) { data[count++] = v; }
+    T pop() { return data[--count]; }
+};
+
+StaticStack<int, 100> stack; // Capacity = 100, fixed at compile time
+```
+
+### Member Functions Defined Outside the Class
+
+When defined outside, the template parameter list must be repeated:
+
+```cpp
+template <typename T>
+class Box {
+    T value;
+public:
+    Box(T v);
+    T get() const;
+};
+
+template <typename T>
+Box<T>::Box(T v) : value(v) {}
+
+template <typename T>
+T Box<T>::get() const { return value; }
+```
+
+---
+
+## 8. Class Template Argument Deduction (CTAD, C++17)
+
+**CTAD** lets you construct an object of a class template without explicitly specifying template arguments — the compiler deduces them from the constructor arguments, similar to function template deduction.
+
+```cpp
+template <typename T>
+class Box {
+    T value;
+public:
+    Box(T v) : value(v) {}
+};
+
+int main() {
+    Box b1(42);           // CTAD: deduces Box<int>       (pre-C++17: Box<int> b1(42); was required)
+    Box b2(3.14);          // CTAD: deduces Box<double>
+    Box b3("hello");       // CTAD: deduces Box<const char*>
+
+    std::vector v{1, 2, 3};       // CTAD: std::vector<int>
+    std::pair p(1, "one");        // CTAD: std::pair<int, const char*>
+}
+```
+
+### User-Defined Deduction Guides
+
+Sometimes the implicit deduction (from constructors) isn't what you want; you can supply a **deduction guide** to steer CTAD.
+
+```cpp
+template <typename T>
+class Box {
+    T value;
+public:
+    Box(T v) : value(v) {}
+};
+
+// Deduction guide: force any Box constructed from a char* to become Box<std::string>
+Box(const char*) -> Box<std::string>;
+
+int main() {
+    Box b("hello");  // Without the guide, this would deduce Box<const char*>.
+                       // With the guide, it deduces Box<std::string>.
+}
+```
+
+`std::vector`'s iterator-pair constructor is a classic real-world example needing a guide:
+
+```cpp
+template <typename Iterator>
+std::vector(Iterator, Iterator)
+    -> std::vector<typename std::iterator_traits<Iterator>::value_type>;
+```
+
+---
+
+## 9. Member Templates
+
+A **member template** is a template member function (or nested template class) inside a regular class or class template. It allows a member to be generic independently of the enclosing class's own template parameters.
+
+```cpp
+class Printer {
+public:
+    template <typename T>          // member function template
+    void print(const T& value) {
+        std::cout << value << "\n";
+    }
+};
+
+int main() {
+    Printer p;
+    p.print(42);        // instantiates print<int>
+    p.print("hello");   // instantiates print<const char*>
+}
+```
+
+Member templates are especially common as **converting constructors** in class templates, e.g. to allow `Box<Derived>` to convert to `Box<Base>`:
+
+```cpp
+template <typename T>
+class Box {
+    T value;
+public:
+    Box(T v) : value(v) {}
+
+    template <typename U>          // member template constructor
+    Box(const Box<U>& other) : value(other.get()) {}
+
+    T get() const { return value; }
+};
+
+struct Base {};
+struct Derived : Base {};
+
+int main() {
+    Box<Derived*> derivedBox(new Derived());
+    Box<Base*> baseBox(derivedBox);   // uses the member template converting constructor
+}
+```
+
+Nested member class templates are also possible:
+
+```cpp
+template <typename T>
+class Outer {
+public:
+    template <typename U>
+    class Inner {
+        T outerVal;
+        U innerVal;
+    public:
+        Inner(T o, U i) : outerVal(o), innerVal(i) {}
+    };
+};
+
+Outer<int>::Inner<double> obj(1, 2.5);
+```
+
+---
+
+## 10. Template Specialization
+
+**Specialization** lets you provide a custom implementation of a template for specific argument(s), overriding the generic (primary) template.
+
+### Explicit / Full Specialization
+
+**All** template parameters are fixed to concrete values/types — you provide a completely separate implementation for one exact combination.
+
+```cpp
+// Primary (generic) template
+template <typename T>
+class TypeName {
+public:
+    static std::string name() { return "unknown"; }
+};
+
+// Full specialization for int
+template <>
+class TypeName<int> {
+public:
+    static std::string name() { return "int"; }
+};
+
+// Full specialization for double
+template <>
+class TypeName<double> {
+public:
+    static std::string name() { return "double"; }
+};
+
+int main() {
+    std::cout << TypeName<int>::name() << "\n";     // "int"
+    std::cout << TypeName<double>::name() << "\n";   // "double"
+    std::cout << TypeName<char>::name() << "\n";     // "unknown" (falls back to primary)
+}
+```
+
+Function templates can be fully specialized too (though overloading is often preferred in practice):
+
+```cpp
+template <typename T>
+bool isEqual(T a, T b) { return a == b; }
+
+template <>
+bool isEqual<const char*>(const char* a, const char* b) {
+    return std::strcmp(a, b) == 0;   // special logic for C-strings
+}
+```
+
+### Partial Specialization
+
+**Only some** of the template parameters are fixed, or a pattern (like "any pointer type" or "any pair of two identical types") is specified instead of one exact type. **Partial specialization is only allowed for class templates**, not function templates (functions use overloading instead to achieve a similar effect).
+
+```cpp
+// Primary template
+template <typename T, typename U>
+class Pair {
+public:
+    static std::string describe() { return "generic pair"; }
+};
+
+// Partial specialization: both types are the same
+template <typename T>
+class Pair<T, T> {
+public:
+    static std::string describe() { return "pair of identical types"; }
+};
+
+// Partial specialization: second type is a pointer
+template <typename T, typename U>
+class Pair<T, U*> {
+public:
+    static std::string describe() { return "pair with pointer as second type"; }
+};
+
+int main() {
+    std::cout << Pair<int, double>::describe() << "\n";  // "generic pair"
+    std::cout << Pair<int, int>::describe() << "\n";      // "pair of identical types"
+    std::cout << Pair<int, double*>::describe() << "\n";  // "pair with pointer as second type"
+}
+```
+
+A very common real-world use of partial specialization is trait detection:
+
+```cpp
+template <typename T>
+struct IsPointer {
+    static constexpr bool value = false;
+};
+
+template <typename T>
+struct IsPointer<T*> {   // partial specialization: matches any pointer type
+    static constexpr bool value = true;
+};
+
+static_assert(IsPointer<int>::value == false);
+static_assert(IsPointer<int*>::value == true);
+```
+
+---
+
+## 11. SFINAE
+
+**SFINAE** = "Substitution Failure Is Not An Error." When substituting template arguments produces an invalid type/expression in the *immediate context*, the compiler silently removes that overload/specialization from the candidate set instead of raising a hard error — it just tries the next candidate.
+
+### Classic SFINAE with `std::enable_if`
+
+```cpp
+#include <type_traits>
+
+// Only participates in overload resolution if T is an integral type
+template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+void process(T value) {
+    std::cout << "Integral: " << value << "\n";
+}
+
+// Only participates if T is a floating-point type
+template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
+void process(T value) {
+    std::cout << "Floating point: " << value << "\n";
+}
+
+int main() {
+    process(5);      // calls the integral overload
+    process(3.14);    // calls the floating-point overload
+    // process("hi"); // ERROR: no matching overload — SFINAE eliminated both candidates
+}
+```
+
+### SFINAE on the Return Type
+
+```cpp
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, T>::type
+doubleIt(T x) {
+    return x * 2;
+}
+```
+
+### SFINAE via `decltype` — Detecting Whether an Expression is Valid
+
+A common pattern: detect at compile time whether a type has a certain member function.
+
+```cpp
+template <typename T>
+class HasToString {
+    template <typename U>
+    static auto test(int) -> decltype(std::declval<U>().toString(), std::true_type{});
+
+    template <typename U>
+    static std::false_type test(...);   // fallback (matches anything, lowest priority)
+
+public:
+    static constexpr bool value = decltype(test<T>(0))::value;
+};
+
+struct WithToString { std::string toString() { return "hi"; } };
+struct WithoutToString {};
+
+static_assert(HasToString<WithToString>::value == true);
+static_assert(HasToString<WithoutToString>::value == false);
+```
+
+### Modern Alternative: `if constexpr` and Concepts (C++17/C++20)
+
+SFINAE is powerful but famously hard to read. Since C++17, `if constexpr` (see section 15) removes the need for SFINAE in many everyday cases, and C++20 **concepts** replace `enable_if`-based constraints with much more readable syntax:
+
+```cpp
+// C++20 concept-based constraint — cleaner alternative to SFINAE
+template <typename T>
+concept Integral = std::is_integral_v<T>;
+
+template <Integral T>
+void process(T value) {
+    std::cout << "Integral: " << value << "\n";
+}
+```
+
+---
+
+## 12. Variadic Templates
+
+**Variadic templates** (C++11) accept an arbitrary number of template arguments via a **parameter pack**, denoted with `...`.
+
+```cpp
+template <typename... Args>       // Args is a template parameter pack
+void printAll(Args... args) {      // args is a function parameter pack
+    // recursive expansion is needed pre-C++17 (see below), C++17 uses fold expressions
+}
+```
+
+### Classic Recursive Expansion (pre-C++17 style)
+
+```cpp
+// Base case: no arguments left
+void printAll() {
+    std::cout << "\n";
+}
+
+// Recursive case: peel off the first argument, recurse on the rest
+template <typename T, typename... Rest>
+void printAll(T first, Rest... rest) {
+    std::cout << first << " ";
+    printAll(rest...);   // expands the pack by one less argument each call
+}
+
+int main() {
+    printAll(1, 2.5, "hello", 'c');  // prints: 1 2.5 hello c
+}
+```
+
+### `sizeof...` — Counting Pack Elements
+
+```cpp
+template <typename... Args>
+void countArgs(Args... args) {
+    std::cout << "Number of arguments: " << sizeof...(Args) << "\n";
+    // or equivalently: sizeof...(args)
+}
+
+countArgs(1, 2, 3);       // 3
+countArgs("a", 1.5);      // 2
+```
+
+### Variadic Class Templates
+
+```cpp
+template <typename... Types>
+class Tuple;   // forward declaration, like std::tuple
+
+// Real-world example: std::tuple itself is a variadic class template
+std::tuple<int, double, std::string> t(1, 2.5, "hi");
+```
+
+### Variadic Templates with Perfect Forwarding (very common pattern — used in `emplace_back`)
+
+```cpp
+template <typename T, typename... Args>
+T* makeOnHeap(Args&&... args) {
+    return new T(std::forward<Args>(args)...);   // forwards each argument, preserving value category
+}
+
+struct Point { Point(int x, int y) {} };
+
+Point* p = makeOnHeap<Point>(3, 4);   // constructs Point(3, 4) directly, forwarding args
+```
+
+---
+
+## 13. Perfect Forwarding
+
+**Perfect forwarding** preserves the value category (lvalue/rvalue) and const-ness of a function argument when passing it on to another function — avoiding unnecessary copies and preserving move semantics. It relies on **universal (forwarding) references** (`T&&` where `T` is a deduced template parameter) combined with `std::forward`.
+
+### The Problem Without Perfect Forwarding
+
+```cpp
+template <typename T>
+void wrapper(T param) {          // always makes a copy
+    target(param);                // always passes an lvalue, even if wrapper() received an rvalue
+}
+```
+
+### The Solution
+
+```cpp
+template <typename T>
+void wrapper(T&& param) {              // universal reference: binds to both lvalues and rvalues
+    target(std::forward<T>(param));     // forwards param preserving its original value category
+}
+
+void target(const std::string& s) { std::cout << "lvalue overload: " << s << "\n"; }
+void target(std::string&& s)      { std::cout << "rvalue overload: " << s << "\n"; }
+
+int main() {
+    std::string s = "hello";
+    wrapper(s);              // s is an lvalue -> calls target(const std::string&)
+    wrapper(std::string("temp")); // rvalue -> calls target(std::string&&) — no unnecessary copy
+}
+```
+
+### How `std::forward` Works
+
+- If `T` was deduced as `U&` (lvalue passed in), `std::forward<T>(param)` produces an lvalue.
+- If `T` was deduced as `U` (rvalue passed in), `std::forward<T>(param)` produces an rvalue (via `static_cast<T&&>`).
+
+### Real-World Example: `emplace_back`
+
+```cpp
+template <typename T>
+class MyVector {
+    // ...
+public:
+    template <typename... Args>
+    void emplace_back(Args&&... args) {
+        // constructs T in-place, forwarding each argument perfectly
+        new (allocate_slot()) T(std::forward<Args>(args)...);
+    }
+};
+```
+
+**Important distinction:** `T&&` is only a "universal/forwarding reference" when `T` is a template parameter deduced *in that same function call*. In a non-deduced context (e.g. `std::vector<T>&&` inside a class template already instantiated with a concrete `T`), `&&` is just an ordinary rvalue reference.
+
+---
+
+## 14. Fold Expressions (C++17)
+
+**Fold expressions** collapse (reduce) a parameter pack using a binary operator, without needing manual recursion.
+
+### Syntax Forms
+
+| Form | Expansion |
+|---|---|
+| Unary right fold `(pack op ...)` | `E1 op (E2 op (... op EN))` |
+| Unary left fold `(... op pack)` | `((E1 op E2) op ...) op EN` |
+| Binary right fold `(pack op ... op init)` | `E1 op (E2 op (... op (EN op init)))` |
+| Binary left fold `(init op ... op pack)` | `(((init op E1) op E2) op ...) op EN` |
+
+### Examples
+
+```cpp
+template <typename... Args>
+auto sum(Args... args) {
+    return (args + ...);   // unary right fold: arg1 + (arg2 + (arg3 + ...))
+}
+
+sum(1, 2, 3, 4);   // 10
+
+template <typename... Args>
+bool allTrue(Args... args) {
+    return (args && ...);  // unary right fold with &&
+}
+
+allTrue(true, true, true);   // true
+allTrue(true, false, true);  // false
+```
+
+### Fold with an Initial Value (binary fold)
+
+```cpp
+template <typename... Args>
+auto sumWithInit(Args... args) {
+    return (args + ... + 100);   // binary right fold, starts folding with 100 added at the end
+}
+
+sumWithInit(1, 2, 3);   // 1 + (2 + (3 + 100)) = 106
+```
+
+### Practical Example: Printing a Variadic Pack (Replaces Recursive Expansion)
+
+```cpp
+template <typename... Args>
+void printAll(Args&&... args) {
+    ((std::cout << args << " "), ...);   // unary right fold over the comma operator
+    std::cout << "\n";
+}
+
+printAll(1, 2.5, "hello", 'c');   // 1 2.5 hello c
+```
+
+### Practical Example: Checking All Types Satisfy a Trait
+
+```cpp
+template <typename... Ts>
+constexpr bool allIntegral = (std::is_integral_v<Ts> && ...);
+
+static_assert(allIntegral<int, long, short>);
+static_assert(!allIntegral<int, double>);
+```
+
+---
+
+## 15. if constexpr
+
+**`if constexpr`** (C++17) evaluates a condition at **compile time** and only compiles the taken branch — the discarded branch isn't even instantiated (though it must still be syntactically valid). This eliminates a huge amount of SFINAE boilerplate for conditional logic inside templates.
+
+```cpp
+template <typename T>
+auto getValue(T t) {
+    if constexpr (std::is_pointer_v<T>) {
+        return *t;              // only compiled if T is a pointer type
+    } else {
+        return t;                // only compiled if T is NOT a pointer type
+    }
+}
+
+int main() {
+    int x = 5;
+    getValue(x);      // T = int, else-branch compiled, returns 5
+    getValue(&x);      // T = int*, if-branch compiled, returns 5 (dereferenced)
+}
+```
+
+### Why This Matters: the Discarded Branch Isn't Instantiated
+
+```cpp
+template <typename T>
+void printSize(T val) {
+    if constexpr (std::is_array_v<T>) {
+        std::cout << "Array size: " << std::extent_v<T> << "\n";
+    } else {
+        std::cout << "Not an array, value: " << val << "\n";
+        // val.someArrayOnlyMethod() would be a HARD ERROR with a regular `if`
+        // even for non-array T, because both branches get compiled with `if`.
+        // With `if constexpr`, the false branch is discarded entirely for non-array T.
+    }
+}
+```
+
+### Recursive Variadic Processing Without Recursion Depth Tricks
+
+```cpp
+template <typename T, typename... Rest>
+void printAll(T first, Rest... rest) {
+    std::cout << first << " ";
+    if constexpr (sizeof...(rest) > 0) {   // compile-time check avoids infinite recursion
+        printAll(rest...);                  // this call only compiled when there IS a rest
+    }
+}
+
+printAll(1, 2, 3);   // 1 2 3
+```
+
+### Constexpr-if vs. Regular if
+
+| | Regular `if` | `if constexpr` |
+|---|---|---|
+| Condition evaluated | Runtime | Compile time |
+| Both branches compiled | Yes (must both be valid) | No (discarded branch is not instantiated) |
+| Works outside templates | Yes | Yes, but pointless (condition must be a constant expression) |
+
+---
+
+## 16. Variable Templates
+
+**Variable templates** (C++14) let you define a family of variables/constants parameterized by type or value, without wrapping them in a class (`::value` boilerplate).
+
+```cpp
+template <typename T>
+constexpr T pi = T(3.1415926535897932385);
+
+int main() {
+    std::cout << pi<float> << "\n";    // pi as a float
+    std::cout << pi<double> << "\n";    // pi as a double
+}
+```
+
+### Before Variable Templates (C++11 style, verbose)
+
+```cpp
+template <typename T>
+struct Pi {
+    static constexpr T value = T(3.14159265358979323846);
+};
+
+Pi<double>::value;   // more verbose access
+```
+
+### Real-World Example: the `_v` Suffix Convention in `<type_traits>`
+
+Most `<type_traits>` traits ending in `_v` (e.g. `std::is_integral_v<T>`) are variable templates defined in terms of the corresponding `::value` trait struct:
+
+```cpp
+template <typename T>
+inline constexpr bool is_integral_v = std::is_integral<T>::value;
+
+// Usage:
+static_assert(std::is_integral_v<int>);      // cleaner than std::is_integral<int>::value
+```
+
+Variable templates can also depend on non-type parameters:
+
+```cpp
+template <int N>
+constexpr int square = N * N;
+
+static_assert(square<5> == 25);
+```
+
+---
+
+## 17. Alias Templates
+
+An **alias template** (C++11) defines a template that is itself an alias for another type — essentially a "typedef with template parameters" (which plain `typedef` cannot express).
+
+```cpp
+template <typename T>
+using Vec = std::vector<T>;
+
+int main() {
+    Vec<int> v = {1, 2, 3};   // same as std::vector<int>
+}
+```
+
+### Why Not `typedef`? — `typedef` Cannot Be Templated
+
+```cpp
+// This does NOT work — typedef cannot have template parameters:
+// template <typename T>
+// typedef std::vector<T> Vec;   // ERROR
+
+// The alias template equivalent works fine:
+template <typename T>
+using Vec = std::vector<T>;      // OK
+```
+
+### Partially Fixing Some Parameters
+
+A very common use case: fixing one template parameter of a multi-parameter template while leaving another generic.
+
+```cpp
+template <typename Key, typename Value>
+using StringMap = std::map<std::string, Value>;   // Key fixed to std::string
+
+StringMap<void, int> m;   // effectively std::map<std::string, int>
+                            // (the unused "Key" placeholder is a minor awkwardness here;
+                            //  a cleaner version omits the unused parameter entirely)
+
+template <typename Value>
+using StringKeyMap = std::map<std::string, Value>;   // cleaner: only Value is generic
+
+StringKeyMap<int> m2;   // std::map<std::string, int>
+```
+
+### Alias Templates for Function Pointer / Complex Types
+
+```cpp
+template <typename R, typename... Args>
+using FuncPtr = R(*)(Args...);
+
+FuncPtr<int, double, double> fp;   // equivalent to: int (*fp)(double, double);
+```
+
+### Alias Templates Combined with `type_traits` (`_t` Suffix Convention)
+
+```cpp
+template <typename T>
+using remove_const_t = typename std::remove_const<T>::type;   // this is how std:: defines its _t aliases
+
+remove_const_t<const int> x = 5;   // x has type int
+```
