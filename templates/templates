@@ -1,12 +1,10 @@
-# C++ Templates & Iterators — Comprehensive Reference
-
-> Every concept explained with a definition, syntax, and a working example.
+# C++ Templates — Comprehensive Reference
 
 ---
 
 ## Table of Contents
 
-**Part I — Templates**
+**Templates**
 1. [Template Type Parameters](#1-template-type-parameters)
 2. [Template Non-Type Parameters](#2-template-non-type-parameters)
 3. [Template Template Parameters](#3-template-template-parameters)
