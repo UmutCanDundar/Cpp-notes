@@ -829,4 +829,4 @@ Is random access (by index) required?
 
 ---
 
-*This document is based on the C++11/14/17/20 standards; implementation details (libstdc++, libc++, MSVC STL) may differ slightly, but complexity guarantees are fixed by the standard.*
+
