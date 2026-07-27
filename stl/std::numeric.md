@@ -1,12 +1,31 @@
-# `<numeric>` — Numeric Algorithms
+# C++ Numeric Utilities & Algorithms (`<numeric>`)
 
-| API | Priority | Description |
-|-----|----------|-------------|
-| `std::accumulate(b, e, init)` | memorize | Sum. init=0. For custom operation, 4th argument: `accumulate(b,e,1,multiplies<>{})`. |
-| `std::reduce(b, e, init)` | know | Like accumulate but has a parallel version. No ordering guarantee. |
-| `std::inner_product(b,e,b2,init)` | know | Dot product. For multiply-sum operations like PnL calculation. |
-| `std::partial_sum(b, e, out)` | know | Prefix sum. For cumulative calculations. |
-| `std::iota(b, e, val)` | memorize | Fill with val, val+1, val+2... For test data, index arrays. |
-| `std::gcd(a, b)` | know | Greatest common divisor. C++17. |
-| `std::lcm(a, b)` | know | Least common multiple. C++17. |
-| `std::midpoint(a, b)` | know | Overflow-safe midpoint. C++20. Useful for bid-ask midpoint. |
+### Notation
+* `b`, `e`: Begin / End iterators
+* `out`: Destination iterator
+* `init`: Initial value
+* `op`, `binary_op`: Custom binary operation (e.g., `std::multiplies<>{}`)
+* `N`: Distance between iterators (`std::distance(b, e)`)
+
+---
+
+## 1. Numeric Algorithms (`<numeric>`)
+
+| Return Type | API / Signature | Big O Complexity | Description |
+| :--- | :--- | :--- | :--- |
+| `T` | `accumulate(b, e, init)` | $O(N)$ | Computes the sum of `init` and all elements in the range. |
+| `T` | `reduce(b, e, init)` | $O(N)$ | Out-of-order parallelizable reduction (sum). C++17. |
+| `T` | `inner_product(b1, e1, b2, init)` | $O(N)$ | Computes the sum of element-wise products (Dot Product). |
+| `T` | `transform_reduce(b, e, init, red_op, trans_op)` | $O(N)$ | Applies a transformation then reduces the range. C++17. |
+| `OutIt` | `partial_sum(b, e, out)` | $O(N)$ | Computes cumulative prefix sums into `out`. |
+| `OutIt` | `inclusive_scan(b, e, out)` | $O(N)$ | Parallelizable prefix sum including the current element. C++17. |
+| `OutIt` | `exclusive_scan(b, e, out, init)` | $O(N)$ | Parallelizable prefix sum excluding the current element. C++17. |
+| `OutIt` | `transform_inclusive_scan(b, e, out, op, trans_op)` | $O(N)$ | Transforms elements then performs an inclusive scan. C++17. |
+| `OutIt` | `transform_exclusive_scan(b, e, out, init, op, trans_op)` | $O(N)$ | Transforms elements then performs an exclusive scan. C++17. |
+| `OutIt` | `adjacent_difference(b, e, out)` | $O(N)$ | Computes differences between adjacent elements. |
+| `void` | `iota(b, e, val)` | $O(N)$ | Fills range with sequentially increasing values starting from `val`. |
+| `T` | `gcd(a, b)` | $O(\log(\min(a,b)))$ | Greatest Common Divisor of `a` and `b`. C++17. |
+| `T` | `lcm(a, b)` | $O(\log(\min(a,b)))$ | Least Common Multiple of `a` and `b`. C++17. |
+| `T` | `midpoint(a, b)` | $O(1)$ | Computes overflow-safe midpoint between `a` and `b`. C++20. |
+| `T` | `lerp(a, b, t)` | $O(1)$ | Computes linear interpolation $a + t(b - a)$. C++20. |
+
