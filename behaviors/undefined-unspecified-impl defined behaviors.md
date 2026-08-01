@@ -428,20 +428,3 @@ g++ -std=c++20 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -g -O1 main
 
 ---
 
-## References
-
-- [cppreference.com — Undefined Behavior](https://en.cppreference.com/w/cpp/language/ub)
-- [ISO/IEC 14882 — the C++ Standard](https://www.iso.org/standard/)
-- [C++ Core Guidelines — ES (Expressions and Statements) section](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
-- [John Regehr's blog — "A Guide to Undefined Behavior in C and C++"](https://blog.regehr.org/)
-- [LLVM Blog — What Every C Programmer Should Know About Undefined Behavior](https://blog.llvm.org/)
-
----
-
-### Contributing
-
-Found an interesting or obscure UB case not listed here? Pull requests are welcome — please include a minimal reproducible example and a link to the relevant standard clause or cppreference page if possible.
-
-### License
-
-Feel free to reuse this reference under the MIT License (or adjust as you like once this is on your own repo).
