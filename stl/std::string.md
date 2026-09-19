@@ -1,5 +1,25 @@
 # `std::string` Methods
 
+### Constructors
+
+| Returns | Method | Usage | Complexity | Note |
+|---------|--------|-------|------------|------|
+| *(constructor)* | default | `string s;` | O(1) | Constructs an empty string. |
+| *(constructor)* | fill | `string s(count, ch)` | O(count) | Constructs a string with `count` copies of character `ch`. |
+| *(constructor)* | substring | `string s(other, pos, count = npos)` | O(count) | Constructs from a substring of `other`, starting at `pos`, `count` characters (or to the end if omitted). |
+| *(constructor)* | from sized C-string | `string s(cstr, count)` | O(count) | Constructs from the first `count` characters of `cstr`; `cstr` need not be null-terminated. |
+| *(constructor)* | from C-string | `string s(cstr)` | O(n) | Constructs from a null-terminated C-string; `n = strlen(cstr)`. |
+| *(constructor)* | iterator range | `string s(first, last)` | O(distance(first, last)) | Constructs from a range of characters given by a pair of iterators. |
+| *(constructor)* | copy | `string s(other)` | O(n) | Copy constructor — deep-copies `other`'s contents. |
+| *(constructor)* | move | `string s(std::move(other))` | O(1) | Move constructor — steals `other`'s buffer; `other` is left valid but unspecified (usually empty). |
+| *(constructor)* | initializer list | `string s({'a','b','c'})` | O(n) | Constructs from a brace-enclosed list of `char`. |
+| *(constructor)* | from string_view-like (C++17) | `string s(t, pos, count)` | O(count) | Constructs from a substring of any type convertible to `string_view`. |
+| *(constructor)* | from string_view-like, explicit (C++17) | `string s(t)` | O(n) | Explicit construction from any type convertible to `string_view` (e.g. `std::string_view`). |
+
+> `n` here = the resulting string's length. Constructors that copy `count`/`n` characters are linear in that count because each character must be copied into the new buffer.
+
+### Methods
+
 | Returns | Method | Usage | Complexity | Note |
 |---------|--------|-------|------------|------|
 | `size_t` | size / length | `s.size()` | O(1) | Character count, both are the same. |
