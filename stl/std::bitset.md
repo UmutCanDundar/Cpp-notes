@@ -4,6 +4,8 @@
 * `N`: compile-time constant — the number of bits, fixed at compile time (template parameter).
 * `i`, `pos`: bit index, `0` to `N-1`.
 * `b`, `b1`, `b2`: instances of `bitset<N>` (both operands of a binary op must have the same `N`).
+* `pos`, `n`: (string constructors only) starting position in the source string, and number of characters to read from it.
+* `zero`, `one`: (string constructors only) which characters represent bit `0` and bit `1` — default `'0'`/`'1'`, but any two distinct characters work.
 
 ---
 
@@ -12,7 +14,8 @@
 | *(class template)* | `bitset<N>` | N/A | Fixed-size sequence of bits, stored compactly (`N/8` bytes). Not resizable, unlike `vector<bool>`. |
 | *(constructor)* | `bitset<N>()` | $O(N)$ | Default-constructs all bits to `0`. |
 | *(constructor)* | `bitset<N>(unsigned long long val)` | $O(N)$ | Constructs from the low `N` bits of `val`. |
-| *(constructor)* | `bitset<N>(const string& str, pos, n)` | $O(N)$ | Constructs from a string of `'0'`/`'1'` characters. |
+| *(constructor)* | `bitset<N>(const string& str, pos = 0, n = npos, zero = '0', one = '1')` | $O(N)$ | Constructs from a `std::string`, reading `n` characters starting at `pos`. `zero`/`one` let you use custom characters instead of literal `'0'`/`'1'` (e.g. `'A'`/`'B'`). |
+| *(constructor)* | `bitset<N>(const CharT* str, n = npos, zero = '0', one = '1')` | $O(N)$ | Same as above, but constructs from a C-string (`const char*`) instead of `std::string`. |
 | `bool` | `operator[](i)` | $O(1)$ | Unchecked read/write access to bit `i` (via a proxy reference). No bounds check. |
 | `bool` | `test(i)` | $O(1)$ | Bounds-checked read of bit `i` — throws `out_of_range` if `i >= N`. |
 | `bitset&` | `set()` | $O(N)$ | Sets all bits to `1`. |
