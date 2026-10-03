@@ -9,8 +9,6 @@ void foo(T&& val) {
 }
 ```
 
-All results were verified with g++ 13.3 (`-std=c++17`). Every ✅ / ❌ in the main table is a real compile result, not a guess.
-
 ---
 
 ## Table of contents
