@@ -2,7 +2,6 @@
 
 Coding interview problemlerinin çoğu birkaç tekrar eden **kalıba (pattern)** oturur. Bu dosyada her kalıp için: **ne zaman kullanılır**, **mantığı**, **şablon kod**, **küçük örnek** ve **çözülecek problemler** var.
 
-
 ## İçindekiler
 
 1. [Two Pointers](#1-two-pointers)
@@ -62,7 +61,7 @@ void moveZeroes(vector<int>& a) {
 
 **Neden çalışır:** Sıralı olduğu için bir tarafı oynatmak toplamı tahmin edilebilir şekilde değiştirir; kaçırdığın çözüm olmaz.
 
-**Problemler:** 125, 167, 283, 11, 15, 42
+**Problemler:** Valid Palindrome, Two Sum II, Move Zeroes, Container With Most Water, 3Sum, Trapping Rain Water
 
 ---
 
@@ -102,7 +101,7 @@ for r in 0..n-1:
 
 **Sabit boyutlu pencere** (örn. "uzunluğu k olan alt dizinin max toplamı"): ilk k elemanı topla, sonra her adımda yeni gireni ekle, çıkanı çıkar.
 
-**Problemler:** 121, 3, 424, 567, 76
+**Problemler:** Best Time to Buy and Sell Stock, Longest Substring Without Repeating Characters, Longest Repeating Character Replacement, Permutation in String, Minimum Window Substring
 
 ---
 
@@ -140,7 +139,7 @@ bool isAnagram(string s, string t) {
 
 **Longest Consecutive Sequence fikri:** Hepsini `unordered_set`'e at. Sadece `x-1` set'te **olmayan** `x`'lerden (dizinin başlangıcı) sayarak ilerle → O(n).
 
-**Problemler:** 217, 242, 1, 49, 347, 128
+**Problemler:** Contains Duplicate, Valid Anagram, Two Sum, Group Anagrams, Top K Frequent Elements, Longest Consecutive Sequence
 
 ---
 
@@ -177,7 +176,7 @@ int subarraySum(vector<int>& a, int k) {
 
 **Product of Array Except Self fikri:** Aynı mantık çarpma ile: her indeks için "solundakilerin çarpımı" × "sağındakilerin çarpımı".
 
-**Problemler:** 303, 724, 238, 560
+**Problemler:** Range Sum Query - Immutable, Find Pivot Index, Product of Array Except Self, Subarray Sum Equals K
 
 ---
 
@@ -225,7 +224,7 @@ vector<int> dailyTemperatures(vector<int>& t) {
 
 **Mini örnek:** `[73, 74, 75, 71, 69, 72, 76]` → `[1, 1, 4, 2, 1, 1, 0]`.
 
-**Problemler:** 20, 155, 150, 739, 496, 853, 84
+**Problemler:** Valid Parentheses, Min Stack, Evaluate Reverse Polish Notation, Daily Temperatures, Next Greater Element I, Car Fleet, Largest Rectangle in Histogram
 
 ---
 
@@ -273,7 +272,7 @@ int minEatingSpeed(vector<int>& piles, int h) {
 
 **Rotated sorted array:** Her adımda `mid`'in hangi yarıda olduğuna (hangi yarı sıralı?) bakıp hedef o yarıdaysa oraya git.
 
-**Problemler:** 704, 74, 875, 153, 33, 981
+**Problemler:** Binary Search, Search a 2D Matrix, Koko Eating Bananas, Find Minimum in Rotated Sorted Array, Search in Rotated Sorted Array, Time Based Key-Value Store
 
 ---
 
@@ -386,7 +385,7 @@ int height(TreeNode* n) {
 
 **Validate BST:** Her düğüm için izinli `(min, max)` aralığı taşı; sola giderken `max` düğümün değeri olur, sağa giderken `min`.
 
-**Problemler:** 94, 144, 145, 102, 104, 199, 543, 98, 230, 173
+**Problemler:** Binary Tree Inorder Traversal, Binary Tree Preorder Traversal, Binary Tree Postorder Traversal, Binary Tree Level Order Traversal, Maximum Depth of Binary Tree, Binary Tree Right Side View, Diameter of Binary Tree, Validate Binary Search Tree, Kth Smallest Element in a BST, Binary Search Tree Iterator
 
 ---
 
@@ -413,7 +412,7 @@ int findKthLargest(vector<int>& a, int k) {
 
 **Not:** C++ `priority_queue` varsayılan olarak **max-heap**'tir. Min-heap için `greater<int>`.
 
-**Problemler:** 703, 1046, 973, 215, 621
+**Problemler:** Kth Largest Element in a Stream, Last Stone Weight, K Closest Points to Origin, Kth Largest Element in an Array, Task Scheduler
 
 ---
 
@@ -442,7 +441,7 @@ vector<vector<int>> merge(vector<vector<int>>& iv) {
 
 **Non-overlapping Intervals / Arrows (greedy varyasyonu):** **Bitişe göre** sırala; her zaman en erken biteni tut, çakışanları say.
 
-**Problemler:** 56, 57, 435, 452
+**Problemler:** Merge Intervals, Insert Interval, Non-overlapping Intervals, Minimum Number of Arrows to Burst Balloons
 
 ---
 
@@ -496,7 +495,7 @@ while (!q.empty()) {
 
 **En kısa yol:** Ağırlıksız grid → BFS. Ağırlıklı (örn. Path With Minimum Effort) → Dijkstra.
 
-**Problemler:** 200, 695, 994, 417, 130, 1091
+**Problemler:** Number of Islands, Max Area of Island, Rotting Oranges, Pacific Atlantic Water Flow, Surrounded Regions, Shortest Path in Binary Matrix
 
 ---
 
@@ -552,7 +551,7 @@ void bt(vector<int>& a, vector<bool>& used) {
 
 **Tekrarlı elemanlar (Subsets II):** Önce sırala; aynı seviyede `a[i] == a[i-1]` ise (`i > start`) atla.
 
-**Problemler:** 78, 46, 39, 90, 79, 131, 51
+**Problemler:** Subsets, Permutations, Combination Sum, Subsets II, Word Search, Palindrome Partitioning, N-Queens
 
 ---
 
@@ -590,7 +589,7 @@ int maxSubArray(vector<int>& a) {
 
 **Dikkat:** Greedy her problemde çalışmaz. Çalışmayan örnek: farklı coin değerleriyle Coin Change (DP gerekir).
 
-**Problemler:** 53, 55, 45, 134, 763, 846
+**Problemler:** Maximum Subarray, Jump Game, Jump Game II, Gas Station, Partition Labels, Hand of Straights
 
 ---
 
@@ -620,7 +619,7 @@ struct DSU {
 - **Redundant Connection:** Kenarları sırayla ekle; `unite` false dönerse o kenar döngü yaratıyor.
 - **Min Cost to Connect All Points (Kruskal):** Kenarları ağırlığa göre sırala, `unite` başarılıysa ekle.
 
-**Problemler:** 547, 684, 721, 1584
+**Problemler:** Number of Provinces, Redundant Connection, Accounts Merge, Min Cost to Connect All Points
 
 ---
 
@@ -657,7 +656,7 @@ vector<int> findOrder(int n, vector<vector<int>>& pre) {
 }
 ```
 
-**Problemler:** 207, 210 (ve Graph genel: 133)
+**Problemler:** Course Schedule, Course Schedule II, Clone Graph
 
 ---
 
@@ -690,7 +689,7 @@ while (!pq.empty()) {
 
 **Cheapest Flights Within K Stops:** Bellman-Ford'u tam `K+1` tur çalıştır; her turda **bir önceki turun** dizisinden güncelle (kopya al), yoksa aynı turda birden fazla kenar kullanılır.
 
-**Problemler:** 743, 787, 1631
+**Problemler:** Network Delay Time, Cheapest Flights Within K Stops, Path With Minimum Effort
 
 ---
 
@@ -793,7 +792,7 @@ bool canPartition(vector<int>& a) {
 
 **Coin Change II (kombinasyon sayısı):** Dış döngü **coin**, iç döngü **tutar** olursa sıra önemsiz sayılır (kombinasyon). Ters olursa permütasyon sayarsın.
 
-**Problemler:** 70, 746, 198, 213, 322, 300, 139, 91, 62, 1143, 518, 416, 494
+**Problemler:** Climbing Stairs, Min Cost Climbing Stairs, House Robber, House Robber II, Coin Change, Longest Increasing Subsequence, Word Break, Decode Ways, Unique Paths, Longest Common Subsequence, Coin Change II, Partition Equal Subset Sum, Target Sum
 
 ---
 
