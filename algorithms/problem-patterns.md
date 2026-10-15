@@ -2,8 +2,6 @@
 
 Coding interview problemlerinin çoğu birkaç tekrar eden **kalıba (pattern)** oturur. Bu dosyada her kalıp için: **ne zaman kullanılır**, **mantığı**, **şablon kod**, **küçük örnek** ve **çözülecek problemler** var.
 
-> **Nasıl çalışılır:** Bir pattern seç → mantığını oku → 3-5 problem çöz → ertesi gün bakmadan tekrar çöz → çözemediklerini birkaç gün sonra tekrar dene.
-> Problem çözerken önce şunu sor: *"Bu hangi kalıp?"*
 
 ## İçindekiler
 
