@@ -335,4 +335,3 @@ template<class T> const char* kind(T x) { return kind_impl(x, std::is_integral<T
 
 ---
 
-*Source: g++ 13.3.0 (Ubuntu 24.04), `-std=c++23`; about 200 examples compiled and evaluated individually. Features marked C++26 follow the finalized standard (March 2026); trivial relocatability is not in it (removed at the Kona meeting, November 2025).*
