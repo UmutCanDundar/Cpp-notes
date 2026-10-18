@@ -57,19 +57,46 @@ Applied to the template parameter `T`:
 
 `T` is **never** deduced as `U&&`.
 
-| Call | Argument category | Deduced `T` | Type of `val` |
-|---|---|---|---|
-| `foo(s)` (`string s`) | lvalue | `string&` | `string&` |
-| `foo(cs)` (`const string cs`) | const lvalue | `const string&` | `const string&` |
-| `foo(string{"x"})` | prvalue | `string` | `string&&` |
-| `foo("x"s)` | prvalue | `string` | `string&&` |
-| `foo(move(s))` | xvalue | `string` | `string&&` |
-| `foo(move(cs))` | const xvalue | `const string` | `const string&&` |
-| `foo(a)` (`int a`) | lvalue | `int&` | `int&` |
-| `foo(4)` | prvalue | `int` | `int&&` |
-| `foo("abc")` | lvalue (string literal) | `const char(&)[4]` | `const char(&)[4]` |
-| `foo<string&&>(string{})` | *explicit `T`* | `string&&` | `string&&` |
-| `foo({1, 2})` | braced-init-list | ❌ cannot deduce `T` | — |
+#### Extended Template Deduction & Type Table
+
+Assumptions for the calls below:
+- `int arr[5];` (array of 5 integers)
+- `void func(int);` (function)
+- `auto lam = [](int x) { return x; };` (lambda expression/object)
+- `string s;` / `const string cs;`
+
+| Call (Argument) | Argument Category | `template <typename T> void f(T val)` | | `template <typename T> void f(T& val)` | | `template <typename T> void f(T&& val)` | |
+|---|---|---|---|---|---|---|---|
+| | | **Deduced `T`** | **Type of `val`** | **Deduced `T`** | **Type of `val`** | **Deduced `T`** | **Type of `val`** |
+| **`f(s)`** | lvalue | `string` | `string` | `string` | `string&` | `string&` | `string&` |
+| **`f(cs)`** | const lvalue | `string` *(const drops)* | `string` | `const string` | `const string&` | `const string&` | `const string&` |
+| **`f(string{"x"})`** | prvalue | `string` | `string` | ❌ *Error* | — | `string` | `string&&` |
+| **`f(move(s))`** | xvalue | `string` | `string` | ❌ *Error* | — | `string` | `string&&` |
+| **`f(move(cs))`** | const xvalue | `string` *(const drops)* | `string` | ❌ *Error* | — | `const string` | `const string&&` |
+| **`f(42)`** | prvalue | `int` | `int` | ❌ *Error* | — | `int` | `int&&` |
+| **`f("abc")`** | lvalue (string literal) | `const char*` *(Decay)* | `const char*` | `const char[4]` | `const char(&)[4]` | `const char(&)[4]` | `const char(&)[4]` |
+| **`f(arr)`** | lvalue (Array) | `int*` *(Decay)* | `int*` | `int[5]` | `int(&)[5]` | `int(&)[5]` | `int(&)[5]` |
+| **`f(func)`** | lvalue (Function) | `void(*)(int)` *(Decay)* | `void(*)(int)` | `void(int)` | `void(&)(int)` | `void(&)(int)` | `void(&)(int)` |
+| **`f(lam)`** | lvalue (Lambda object) | `decltype(lam)` | `decltype(lam)` | `decltype(lam)` | `decltype(lam)&` | `decltype(lam)&` | `decltype(lam)&` |
+| **`f(decltype(lam){})`** | prvalue (Temporary Lambda) | `decltype(lam)` | `decltype(lam)` | ❌ *Error* | — | `decltype(lam)` | `decltype(lam)&&` |
+| **`f({1, 2})`** | braced-init-list | ❌ *Cannot deduce `T`* | — | ❌ *Cannot deduce `T`* | — | ❌ *Cannot deduce `T`* | — |
+
+---
+
+#### Critical Rules & Key Takeaways
+
+1. **Array and Function Decay Rule:**
+   - **`T val` (By-value):** Arrays decay to pointers (`int*`, `const char*`), and functions decay to function pointers (`void(*)(int)`).
+   - **`T&` and `T&&` (Reference):** No decay occurs. The exact size and type are preserved as reference to array (`int(&)[5]`) or reference to function (`void(&)(int)`).
+
+2. **Lambda Expressions:**
+   - Lambda objects have a unique unnamed class type.
+   - Passing an lvalue lambda (`lam`) yields `T = decltype(lam)`. For `T&&`, since it's an lvalue, `T` is deduced as `decltype(lam)&`, collapsing `val` to an lvalue reference.
+   - Passing an unnamed temporary lambda (`[](int x){...}`) is a prvalue, so `T&&` deduces `T = decltype(lam)` and `val` becomes an rvalue reference (`decltype(lam)&&`).
+
+3. **Const and Reference Stripping (Value-Decay):**
+   - **`T val`:** Top-level `const` and reference qualifiers are stripped because the argument is copied into a brand-new object (`const string` ➔ `string`).
+   - **`T&` and `T&&`:** `const` qualifiers are preserved and become part of the deduced type `T`.
 
 The only way to get `T = string&&` is to spell it explicitly. Deduction will never produce it.
 
