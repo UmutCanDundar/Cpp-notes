@@ -74,6 +74,7 @@ Assumptions for the calls below:
 | **`f(move(s))`** | xvalue | `string` | `string` | ❌ *Error* | — | `string` | `string&&` |
 | **`f(move(cs))`** | const xvalue | `string` *(const drops)* | `string` | ❌ *Error* | — | `const string` | `const string&&` |
 | **`f(42)`** | prvalue | `int` | `int` | ❌ *Error* | — | `int` | `int&&` |
+| **`f(ptr)`** | lvalue (Pointer) | `int*` | `int*` | `int*` | `int*&` | `int*&` | `int*&` |
 | **`f("abc")`** | lvalue (string literal) | `const char*` *(Decay)* | `const char*` | `const char[4]` | `const char(&)[4]` | `const char(&)[4]` | `const char(&)[4]` |
 | **`f(arr)`** | lvalue (Array) | `int*` *(Decay)* | `int*` | `int[5]` | `int(&)[5]` | `int(&)[5]` | `int(&)[5]` |
 | **`f(func)`** | lvalue (Function) | `void(*)(int)` *(Decay)* | `void(*)(int)` | `void(int)` | `void(&)(int)` | `void(&)(int)` | `void(&)(int)` |
