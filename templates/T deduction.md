@@ -69,19 +69,23 @@ Assumptions for the calls below:
 |---|---|---|---|---|---|---|---|
 | | | **Deduced `T`** | **Type of `val`** | **Deduced `T`** | **Type of `val`** | **Deduced `T`** | **Type of `val`** |
 | **`f(s)`** | lvalue | `string` | `string` | `string` | `string&` | `string&` | `string&` |
-| **`f(cs)`** | const lvalue | `string` *(const drops)* | `string` | `const string` | `const string&` | `const string&` | `const string&` |
+| **`f(cs)`** | const lvalue | `string` *(top-level const drops)* | `string` | `const string` | `const string&` | `const string&` | `const string&` |
 | **`f(string{"x"})`** | prvalue | `string` | `string` | ❌ *Error* | — | `string` | `string&&` |
 | **`f(move(s))`** | xvalue | `string` | `string` | ❌ *Error* | — | `string` | `string&&` |
-| **`f(move(cs))`** | const xvalue | `string` *(const drops)* | `string` | ❌ *Error* | — | `const string` | `const string&&` |
+| **`f(move(cs))`** | const xvalue | `string` *(top-level const drops)* | `string` | ❌ *Error* | — | `const string` | `const string&&` |
 | **`f(42)`** | prvalue | `int` | `int` | ❌ *Error* | — | `int` | `int&&` |
+| **`f(cx)`** | const lvalue | `int` *(top-level const drops)* | `int` | `const int` | `const int&` | `const int&` | `const int&` |
+| **`f(cref)`** | const lvalue | `int` *(ref & const drop)* | `int` | `const int` | `const int&` | `const int&` | `const int&` |
 | **`f(ptr)`** | lvalue (Pointer) | `int*` | `int*` | `int*` | `int*&` | `int*&` | `int*&` |
+| **`f(cptr)`** | lvalue (Ptr to const) | `const int*` *(low-level const kept)* | `const int*` | `const int*` | `const int*&` | `const int*&` | `const int*&` |
+| **`f(cptro)`** | lvalue (Const ptr) | `int*` *(top-level const drops)* | `int*` | `int* const` | `int* const&` | `int* const&` | `int* const&` |
 | **`f("abc")`** | lvalue (string literal) | `const char*` *(Decay)* | `const char*` | `const char[4]` | `const char(&)[4]` | `const char(&)[4]` | `const char(&)[4]` |
 | **`f(arr)`** | lvalue (Array) | `int*` *(Decay)* | `int*` | `int[5]` | `int(&)[5]` | `int(&)[5]` | `int(&)[5]` |
+| **`f(carr)`** | lvalue (Const Array) | `const int*` *(Decay)* | `const int*` | `const int[5]` | `const int(&)[5]` | `const int(&)[5]` | `const int(&)[5]` |
 | **`f(func)`** | lvalue (Function) | `void(*)(int)` *(Decay)* | `void(*)(int)` | `void(int)` | `void(&)(int)` | `void(&)(int)` | `void(&)(int)` |
 | **`f(lam)`** | lvalue (Lambda object) | `decltype(lam)` | `decltype(lam)` | `decltype(lam)` | `decltype(lam)&` | `decltype(lam)&` | `decltype(lam)&` |
 | **`f(decltype(lam){})`** | prvalue (Temporary Lambda) | `decltype(lam)` | `decltype(lam)` | ❌ *Error* | — | `decltype(lam)` | `decltype(lam)&&` |
 | **`f({1, 2})`** | braced-init-list | ❌ *Cannot deduce `T`* | — | ❌ *Cannot deduce `T`* | — | ❌ *Cannot deduce `T`* | — |
-
 ---
 
 #### Critical Rules & Key Takeaways
