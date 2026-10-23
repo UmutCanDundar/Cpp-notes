@@ -63,7 +63,6 @@ Concepts are usually written **on top of** traits and `requires` expressions. Mo
 
 | Returns | Concept | Usage | Note |
 |---|---|---|---|
-
 | `bool` | movable | `movable<T>`<br>`movable<unique_ptr<int>>` → `true`<br>`movable<const int>` → `false` | `T` is an object type, `move_constructible`, `assignable_from<T&, T>` and `swappable`. |
 | `bool` | copyable | `copyable<T>`<br>`copyable<unique_ptr<int>>` → `false`<br>`copyable<string>` → `true` | `movable` + `copy_constructible` + copy-assignable. Move-only types such as `unique_ptr` stop here. |
 | `bool` | semiregular | `semiregular<T>`<br>`semiregular<string>` → `true`<br>`semiregular<NoDef>` → `false` | `copyable` + `default_initializable`. Behaves like a plain value that can be default-created. |
@@ -302,4 +301,3 @@ template<class T> concept Container = requires(T c) {
 | C++23 | New domain concepts in other headers, for example `constant_range` in `<ranges>`. |
 | C++26 | New domain concepts such as the sender / receiver concepts of `std::execution` (not compiled here). |
 
-*Source: g++ 13.3.0 (Ubuntu 24.04), `-std=c++23`. The library-concept results, the 26 syntax checks (compile / error), the overload-selection outputs and the full usage program were all compiled and run.*
